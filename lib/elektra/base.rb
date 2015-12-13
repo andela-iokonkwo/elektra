@@ -20,6 +20,10 @@ module Elektra
       end
     end
 
+    def params
+      @req.params
+    end
+
     def call(env)
       @req = Rack::Request.new(env)
       path = @req.path_info
