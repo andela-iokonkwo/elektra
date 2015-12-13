@@ -5,6 +5,10 @@ class FakeServer < Elektra::Base
     "Get request"
   end
 
+  get "/hello/:name" do
+    "Hello #{params['name']}"
+  end
+
   get "/rack" do
     [201, {}, ["Get request to rack endpoint"]]
   end
@@ -43,12 +47,20 @@ RSpec.describe Elektra::Base do
       expect(response).to eq "Get request to rack endpoint"
     end
 
-    it 'can retrieve params passed when a get request with params is issued' do
+    it 'can retrieve query params passed when a get request with params is issued' do
       uri = URI('https://localhost:3000/with_params?name=ikem')
 
       response = Net::HTTP.get(uri)
 
       expect(response).to eq "Get request made with param name = ikem"
+    end
+
+    it 'can retrieve params passed when a get request with params is issued' do
+      uri = URI('https://localhost:3000/hello/ikem')
+
+      response = Net::HTTP.get(uri)
+
+      expect(response).to eq "Hello ikem"
     end
 
   end
