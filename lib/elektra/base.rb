@@ -1,4 +1,5 @@
 require "rack"
+require_relative "helpers"
 
 module Elektra
   class Base
