@@ -1,3 +1,4 @@
+require "elektra/base"
 require "elektra/version"
 
 module Elektra

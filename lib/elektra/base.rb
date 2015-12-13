@@ -1,3 +1,5 @@
+require "rack"
+
 module Elektra
   class Base
 
@@ -35,5 +37,6 @@ module Elektra
         [404, {}, ["This endpoint do not exist"]]
       end
     end
+
   end
 end
