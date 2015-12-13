@@ -2,6 +2,9 @@ require "rack"
 
 module Elektra
   class Base
+    extend Forwardable
+
+    attr_reader :response
 
     class << self
 
@@ -30,31 +33,40 @@ module Elektra
       end
     end
 
-    def params
-      @req.params
+    %w(params body).each do |method_name|
+      define_method(method_name) do
+        @req.send(method_name)
+      end
     end
 
-    def body
-      @req.body
+    %w(status header).each do |method_name|
+      define_method(method_name) do |*args|
+        @response.send("#{method_name}=", *args)
+      end
     end
 
     def call(env)
       @req = Rack::Request.new(env)
+      @response = Rack::Response.new
       path = @req.path_info
       verb = @req.request_method.downcase.to_sym
+      generate_response_for verb, path
+      @response
+    end
+
+    def generate_response_for(verb, path)
       block_to_execute = execute_block_for(verb, path)
 
       if block_to_execute
-        response = instance_eval(&block_to_execute)
-        if response.class == String
-          [200, {"Content-Type" => "text/html"}, [response]]
-        else
-          response
-        end
+        execute_block_result = instance_eval(&block_to_execute)
+        @response.body = [execute_block_result]
+        # require 'pry'; binding.pry
       else
-        [404, {}, ["This endpoint do not exist"]]
+        @response.write "This endpoint do not exist"
+        @response.status = 404
       end
     end
+
 
     def execute_block_for(verb, path)
       self.class.endpoints[verb].each do |route, block|

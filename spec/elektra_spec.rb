@@ -2,23 +2,15 @@ require 'spec_helper'
 
 class FakeServer < Elektra::Base
   get "/" do
-    "Get request"
+    status 201
   end
 
   get "/hello/:name" do
     "Hello #{params['name']}"
   end
 
-  get "/rack" do
-    [201, {}, ["Get request to rack endpoint"]]
-  end
-
   get "/with_params" do
     "Get request made with param name = #{params['name']}"
-  end
-
-  put "/new" do
-    [200, {}, ["This is the new PUT endpoint with  #{params} params "]]
   end
 end
 
@@ -34,17 +26,10 @@ RSpec.describe Elektra::Base do
     it 'can respond with a string when a get request is issued' do
       uri = URI('https://localhost:3000/')
 
-      response = Net::HTTP.get(uri)
+      response = Net::HTTP.get_response(uri)
 
-      expect(response).to eq "Get request"
-    end
-
-    it 'can respond with a rack compatible response when a get request is issued' do
-      uri = URI('https://localhost:3000/rack')
-
-      response = Net::HTTP.get(uri)
-
-      expect(response).to eq "Get request to rack endpoint"
+      expect(response.body).to eq "Get request"
+      expect(response.code).to eq "201"
     end
 
     it 'can retrieve query params passed when a get request with params is issued' do
