@@ -2,8 +2,6 @@ require "rack"
 
 module Elektra
   class Base
-    extend Forwardable
-
     attr_reader :response
 
     class << self
@@ -56,11 +54,25 @@ module Elektra
 
     def generate_response_for(verb, path)
       block_to_execute = execute_block_for(verb, path)
+      execute_block_result = instance_eval(&block_to_execute)
 
-      if block_to_execute
-        execute_block_result = instance_eval(&block_to_execute)
-        @response.body = [execute_block_result]
-        # require 'pry'; binding.pry
+      if execute_block_result
+        if execute_block_result.is_a? String
+          @response.write execute_block_result
+        elsif execute_block_result.length == 3
+          # require "pry"; binding.pry
+          @response.status = execute_block_result[0]
+          execute_block_result[1].each { |key, value| @response[key] = value }
+          @response.body = execute_block_result[2]
+        elsif execute_block_result.length == 2
+          @response.status = execute_block_result[0]
+          @response.body = execute_block_result[1]
+        elsif execute_block_result.is_a? Fixnum
+          @response.status = execute_block_result
+        elsif execute_block_result.respond_to?(:each)
+          @response.body = execute_block_result
+        end
+
       else
         @response.write "This endpoint do not exist"
         @response.status = 404

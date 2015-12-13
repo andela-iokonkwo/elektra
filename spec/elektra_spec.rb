@@ -3,10 +3,11 @@ require 'spec_helper'
 class FakeServer < Elektra::Base
   get "/" do
     status 201
+    "Get request"
   end
 
   get "/hello/:name" do
-    "Hello #{params['name']}"
+    [301, {}, ["Hello #{params['name']}"]]
   end
 
   get "/with_params" do
