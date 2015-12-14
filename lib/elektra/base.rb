@@ -1,5 +1,6 @@
 require "rack"
 require "pry"
+require_relative "config"
 require_relative "filters"
 require_relative "helpers"
 require_relative "redirect"

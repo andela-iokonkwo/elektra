@@ -34,7 +34,7 @@ end
 
 RSpec.describe Elektra::Base do
 
-  describe "#get" do
+  describe "#helpers" do
     it 'can see helpers defined in block' do
       uri = URI('https://localhost:3000/hello/ikem/okonkwo')
 

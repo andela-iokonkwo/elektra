@@ -3,6 +3,7 @@ require 'elektra/base'
 
 
 class RenderServer < Elektra::Base
+  set :views_folder, File.dirname(__FILE__) + '/views'
   get "/about" do
     @user = {name: "ikem okonkwo", email: "ikem.okonkwo@andela.com"}
     @users = []
@@ -28,19 +29,26 @@ end
 
 RSpec.describe Elektra::Base do
 
-  describe "#get" do
-    it 'can redirect to a given url' do
+  describe "#render" do
+    it 'can render a view without a layout' do
       uri = URI('https://localhost:3000/about')
 
       response = Net::HTTP.get_response(uri)
       expect(response.body).to include "ikem.okonkwo@andela.com"
     end
 
-    it 'can redirect to a given url' do
+    it 'can render a view with a layout' do
       uri = URI('https://localhost:3000/')
 
       response = Net::HTTP.get_response(uri)
       expect(response.body).to include "ikem.okonkwo@andela.com"
+    end
+
+    it 'can return a content-type of text/html if a view is rendered' do
+      uri = URI('https://localhost:3000/')
+
+      response = Net::HTTP.get_response(uri)
+      expect(response["Content-Type"]).to eq "text/html"
     end
   end
 end

@@ -2,11 +2,13 @@ require 'slim'
 module Elektra
   class Base
     def render(template, layout: true)
-      filename = File.join("views","#{template}.slim")
+      filename = File.join(@@configuration[:views_folder], "#{template}.slim")
+      @response["Content-Type"] = "text/html"
       scope = Object.new
       instance_variable_to_view.each { |key, value| scope.instance_variable_set(key, value) }
       compiled_template = Slim::Template.new(filename).render(scope)
-      compiled_template = Slim::Template.new("views/layout.slim").render { compiled_template } if layout
+      compiled_template = Slim::Template.new("#{@@configuration[:views_folder]}/#{@@configuration[:layout]}.slim").
+                            render { compiled_template } if layout
       compiled_template
     end
 
