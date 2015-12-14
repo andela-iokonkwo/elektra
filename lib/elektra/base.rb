@@ -2,7 +2,10 @@ require "rack"
 require "pry"
 require_relative "filters"
 require_relative "helpers"
+require_relative "redirect"
+require_relative "render"
 require_relative "routes"
+
 
 module Elektra
   class Base
