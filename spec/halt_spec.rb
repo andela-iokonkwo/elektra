@@ -20,8 +20,8 @@ end
 
 RSpec.describe Elektra::Base do
 
-  describe "#get" do
-    it 'can see helpers defined in block' do
+  describe "#halt" do
+    it 'can stop execution at any point' do
       uri = URI('https://localhost:3000/hello')
 
       response = Net::HTTP.get_response(uri)

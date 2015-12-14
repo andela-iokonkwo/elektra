@@ -20,7 +20,7 @@ RSpec.configure do |config|
   end
 end
 
-RSpec.describe Elektra::Base do
+RSpec.describe "Classical" do
 
   describe "#get" do
     it 'can respond with a string when a get request is issued' do

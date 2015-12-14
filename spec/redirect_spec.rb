@@ -26,7 +26,7 @@ end
 
 RSpec.describe Elektra::Base do
 
-  describe "#get" do
+  describe "#redirect" do
     it 'can redirect to a given url' do
       uri = URI('https://localhost:3000/hello')
 
