@@ -1,4 +1,5 @@
 require "rack"
+require "pry"
 require_relative "helpers"
 require_relative "filters"
 
@@ -45,6 +46,12 @@ module Elektra
       end
     end
 
+    def halt(*response)
+      response = response.first if response.length == 1
+      update_response_with response
+      throw :halt
+    end
+
     def call(env)
       @request = Rack::Request.new(env)
       @response = Rack::Response.new
@@ -52,25 +59,29 @@ module Elektra
       @response.finish
     end
 
+
+
     def path_and_verb
       [@request.path_info, @request.request_method.downcase.to_sym]
     end
 
     def generate_response_for_request
-      execute_block_result = execute_block_and_before_filters
-
-      if execute_block_result
-        update_response_with execute_block_result
-        execute_after_filters
-      else
-        @response.write "This endpoint do not exist"
-        @response.status = 404
+      catch :halt do
+        execute_block_result = execute_block_and_before_filters
+        if execute_block_result
+          update_response_with execute_block_result
+          execute_after_filters
+          return
+        end
+        halt 404
       end
     end
 
     def update_response_with(execute_block_result)
       if execute_block_result.is_a? String
           @response.write execute_block_result
+      elsif execute_block_result.is_a? Fixnum
+        @response.status = execute_block_result
       elsif execute_block_result.length == 3
         @response.status = execute_block_result[0]
         execute_block_result[1].each { |key, value| @response[key] = value }
@@ -78,8 +89,6 @@ module Elektra
       elsif execute_block_result.length == 2
         @response.status = execute_block_result[0]
         @response.body = execute_block_result[1]
-      elsif execute_block_result.is_a? Fixnum
-        @response.status = execute_block_result
       elsif execute_block_result.respond_to?(:each)
         @response.body = execute_block_result
       end
