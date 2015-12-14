@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'elektra/base'
 
 module NameUtils
   def name

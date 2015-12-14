@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'elektra/base'
 
 class HaltServer < Elektra::Base
 

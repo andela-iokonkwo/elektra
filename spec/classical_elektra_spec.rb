@@ -1,25 +1,22 @@
 require 'spec_helper'
-require 'elektra/base'
+require 'elektra'
 
+get "/" do
+  status 201
+  "Get request"
+end
 
-class FakeServer < Elektra::Base
-  get "/" do
-    status 201
-    "Get request"
-  end
+get "/hello/:name" do
+  [301, {}, ["Hello #{params['name']}"]]
+end
 
-  get "/hello/:name" do
-    [301, {}, ["Hello #{params['name']}"]]
-  end
-
-  get "/with_params" do
-    "Get request made with param name = #{params['name']}"
-  end
+get "/with_params" do
+  "Get request made with param name = #{params['name']}"
 end
 
 RSpec.configure do |config|
   config.before(:each) do
-    stub_request(:any, /localhost:3000/).to_rack(FakeServer.new)
+    stub_request(:any, /localhost:3000/).to_rack(Application)
   end
 end
 
@@ -53,3 +50,5 @@ RSpec.describe Elektra::Base do
 
   end
 end
+
+
